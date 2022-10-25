@@ -9,7 +9,7 @@ function App() {
   const [size, setSize] = useState(9);
 
   // const amtOfMines = 10;
-  // const amtOfMinesRef = useRef();
+  const amtOfMinesRef = useRef();
   const [amtOfMines, setamtOfMines] = useState(10);
   const [exploded, setExploded] = useState(false)
   const [win, setWin] = useState(false)
@@ -17,20 +17,16 @@ function App() {
   let groundArr = [];
   const [ground, setGround] = useState(groundArr)
 
-  // const resize = () => {
-  //   console.log(sizeRef.current.value)
-  //   setSize(sizeRef.current.value)
-  //   groundArr = [];
-  //   console.log('size ===', size);
+  const resize = () => {
+    console.log(sizeRef.current.value)
+    setSize(sizeRef.current.value)
+    groundArr = [];
+    makeField()
+  }
 
-  //   makeField()
-  //   console.log('groundArr.length ===', groundArr.length);
-  // }
+  const makeField = () => {
 
-  const makeField = (s) => {
-    // groundArr = []
-    console.log('groundArr === in make field1', groundArr);
-    for (let index = 0; index < s ** 2; index++) {
+    for (let index = 0; index < size ** 2; index++) {
       const cell = {
         mine: 0,
         clicked: 0,
@@ -38,32 +34,8 @@ function App() {
       }
       groundArr.push(cell)
     }
-    // setGround(groundArr)
-    console.log("ground= in make field", ground)
-    console.log('groundArr === in make field2', groundArr);
-
-
   }
-  const resize = () => {
-    // const groundCopy = [...ground];
-    // groundCopy.filter(() => false)
-    const groundCopy = []
-    console.log('groundCopy ===', groundCopy);
-    setGround(groundCopy);
-    console.log("ground= in resize po uznulinimo ", ground)
-    console.log('sizeRef:', sizeRef.current.value)
-    setSize(sizeRef.current.value);
-    console.log('size:', size)
-    makeField(sizeRef.current.value);
-    setGround(groundArr)
-    console.log("ground= in resize", ground)
-    console.log('groundArr === in resize', groundArr);
-
-    // placeMine(amtOfMines)
-  }
-
-
-
+  makeField()
 
   //  updateGround(size);
   function getRandomInt(min, max) {
@@ -102,8 +74,8 @@ function App() {
     setGround(groundCopy)
     if (ground[index].mine === 1) setExploded(true);
 
-    // console.log(index)
-    // console.log(ground[index])
+    console.log(index)
+    console.log(ground[index])
   }
   const setNeighbouringMines = (m, i) => {
     const groundCopy = [...ground];
@@ -111,80 +83,76 @@ function App() {
     setGround(groundCopy)
   }
 
+
   const countNeighbouringMines = (array, index) => {
 
     let minesArround = 0;
+    // jei indeksas 0 tai kaimynai === i+1, i+size, i+size+1;
     if (index === 0) {
-      minesArround = array
-        .filter((e, i) => i === index + 1 || i === index + size || i === index + size + 1)
-        .reduce((sum, { mine }) => sum + mine, 0)
+      minesArround = array.filter((e, i) => i === index + 1 || i === index + size || i === index + size + 1).reduce((sum, { mine }) => sum + mine, 0)
       setNeighbouringMines(minesArround, index)
       return;
     }
-
+    // jei indeksas size-1 tai kaimynai === i-1, i+size, i+size-1
     if (index === size - 1) {
-      minesArround = array
-        .filter((e, i) => i === index - 1 || i === index + size || i === index + size - 1)
-        .reduce((sum, { mine }) => sum + mine, 0)
+      minesArround = array.filter((e, i) => i === index - 1 || i === index + size || i === index + size - 1).reduce((sum, { mine }) => sum + mine, 0)
       setNeighbouringMines(minesArround, index)
       return;
     }
+    // jei indeksas size*size-size tai kaimynai === i+1, i-size, i-size+1
     if (index === size * size - size) {
-      minesArround = array
-        .filter((e, i) => i === index + 1 || i === index - size || i === index - size + 1)
-        .reduce((sum, { mine }) => sum + mine, 0)
+      minesArround = array.filter((e, i) => i === index + 1 || i === index - size || i === index - size + 1).reduce((sum, { mine }) => sum + mine, 0)
       setNeighbouringMines(minesArround, index)
       return;
     }
+    // jei indeksas size*size-1 tai kaimynai i-1, i-size, i - size -1,
     if (index === (size * size) - 1) {
-      minesArround = array
-        .filter((e, i) => i === index - 1 || i === index - size || i === index - size - 1)
-        .reduce((sum, { mine }) => sum + mine, 0)
+      minesArround = array.filter((e, i) => i === index - 1 || i === index - size || i === index - size - 1).reduce((sum, { mine }) => sum + mine, 0)
+      console.log(index - 1)
+      console.log(index - size)
+      console.log(index - size - 1)
       setNeighbouringMines(minesArround, index)
       return;
     }
+    // jei indeksas daugaiu 0 bet maziau size-2, tai kaimynai i+1, i-1, i+size, i+size+1, i+size-1
     if (index > 0 && index < (size - 1)) {
-      minesArround = array
-        .filter((e, i) => i === index + 1 || i === index - 1 || i === index + size || i === index + size + 1 || i === index + size - 1)
-        .reduce((sum, { mine }) => sum + mine, 0)
+      minesArround = array.filter((e, i) => i === index + 1 || i === index - 1 || i === index + size || i === index + size + 1 || i === index + size - 1).reduce((sum, { mine }) => sum + mine, 0)
       setNeighbouringMines(minesArround, index)
       return;
     }
-
+    // jei indeksas daugaiu size*size-size bet maziau size*size-1, tai kaimynai i+1, i-1, i-size, i-size+1, i-size-1
     if (index > size * size - size && index < (size * size - 1)) {
-      minesArround = array
-        .filter((e, i) => i === index + 1 || i === index - 1 || i === index - size || i === index - size + 1 || i === index - size - 1)
-        .reduce((sum, { mine }) => sum + mine, 0)
+      minesArround = array.filter((e, i) => i === index + 1 || i === index - 1 || i === index - size || i === index - size + 1 || i === index - size - 1).reduce((sum, { mine }) => sum + mine, 0)
       setNeighbouringMines(minesArround, index)
       return;
     }
+    // jei indeksas dalinasi is size ir mazenis uz size*size-size ir didesnis uz 0 tai kaimynai i+size, i-size, i+1, i+1+size, i+1-size, 
     if (index % size === 0 && index < size * size - size && index > 0) {
-      minesArround = array
-        .filter((e, i) => i === index + size || i === index - size || i === index + 1 || i === index + 1 + size || i === index + 1 - size)
-        .reduce((sum, { mine }) => sum + mine, 0)
+      minesArround = array.filter((e, i) => i === index + size || i === index - size || i === index + 1 || i === index + 1 + size || i === index + 1 - size).reduce((sum, { mine }) => sum + mine, 0)
       setNeighbouringMines(minesArround, index)
       return;
     }
 
+    // jei indeksas+1 dalinasi is size ir mazenis uz size*size-1 ir didesnis uz size-1 tai kaimynai i+size, i-size, i-1, i-1+size, i-1-size, 
     if ((index + 1) % size === 0 && index < size * size - 1 && index > size - 1) {
-      minesArround = array
-        .filter((e, i) => i === index + size || i === index - size || i === index - 1 || i === index - 1 + size || i === index - 1 - size)
-        .reduce((sum, { mine }) => sum + mine, 0)
+      minesArround = array.filter((e, i) => i === index + size || i === index - size || i === index - 1 || i === index - 1 + size || i === index - 1 - size).reduce((sum, { mine }) => sum + mine, 0)
       setNeighbouringMines(minesArround, index)
       return;
     }
-
-    minesArround = array
-      .filter((e, i) =>
-        i === index - 1 || i === index - 1 - size || i === index - 1 + size || i === index - size || i === index + size || i === index + 1 || i === index + 1 + size || i === index + 1 - size)
+    // likę:  kaimynai i-1, i-1-size, i-1+size, i-size, i+size, i+1, i+1+size, i+1-size.
+    minesArround = array.filter((e, i) =>
+      i === index - 1 || i === index - 1 - size || i === index - 1 + size || i === index - size || i === index + size || i === index + 1 || i === index + 1 + size || i === index + 1 - size)
       .reduce((sum, { mine }) => sum + mine, 0)
     setNeighbouringMines(minesArround, index)
     return;
   }
+  // const resize = () => {
+  //   console.log(sizeRef.current.value)
+  //   setSize(sizeRef.current.value);
+  //   placeMine(amtOfMines)
+  // }
 
-  makeField(size)
-  // useEffect(() => makeField(size));
-  useEffect(() => placeMine(amtOfMines), [size]);
+  useEffect(() => placeMine(amtOfMines), []);
   useEffect(() => ground.forEach((e, i, arr) => {
     countNeighbouringMines(arr, i)
   }), []);
@@ -194,8 +162,8 @@ function App() {
 
 
     <div className="App">
-      {/* <input ref={sizeRef} type="text" placeholder='Enter field size' />
-      <button onClick={() => resize()}> Enter </button> */}
+      <input ref={sizeRef} type="text" placeholder='Enter field size' />
+      <button onClick={() => resize()}> Enter </button>
 
 
       {/* <input ref={amtOfMinesRef} type="text" placeholder='Įveskite lauko dydį' />
